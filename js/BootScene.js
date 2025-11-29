@@ -5,8 +5,12 @@ class BootScene extends Phaser.Scene {
 
     // Onde se carrega todos os assets (imagens, spritesheets, áudio)
     preload() {
-        // --- Indicador de Progresso (Opcional, mas recomendado) ---
-        // Cria uma barra de progresso visual (útil para assets grandes)
+      // Imagens dos botões (Assumindo que as salvou com estes nomes)
+    this.load.image('logo', 'assets/images/logo.png'); // O seu novo Logotipo colorido
+    this.load.image('btn_play', 'assets/images/btn_play.png');
+    this.load.image('btn_instructions', 'assets/images/btn_instructions.png');
+    this.load.image('btn_exit', 'assets/images/btn_exit.png');
+    this.load.image('btn_menu', 'assets/images/btn_menu.png'); // Botão "MENU" (para GameOverScene)
         
         const progressBar = this.add.graphics();
         const progressBox = this.add.graphics();
