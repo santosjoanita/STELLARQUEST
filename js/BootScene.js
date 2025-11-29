@@ -2,16 +2,7 @@ class BootScene extends Phaser.Scene {
     constructor() {
         super('BootScene');
     }
-
-    // Onde se carrega todos os assets (imagens, spritesheets, áudio)
     preload() {
-      // Imagens dos botões (Assumindo que as salvou com estes nomes)
-    this.load.image('logo', 'assets/images/logo.png'); // O seu novo Logotipo colorido
-    this.load.image('btn_play', 'assets/images/btn_play.png');
-    this.load.image('btn_instructions', 'assets/images/btn_instructions.png');
-    this.load.image('btn_exit', 'assets/images/btn_exit.png');
-    this.load.image('btn_menu', 'assets/images/btn_menu.png'); // Botão "MENU" (para GameOverScene)
-        
         const progressBar = this.add.graphics();
         const progressBox = this.add.graphics();
         progressBox.fillStyle(0x222222, 0.8);
@@ -41,23 +32,27 @@ class BootScene extends Phaser.Scene {
             loadingText.destroy();
         });
 
-        // --- Carregamento de Imagens e Assets ---
+       
+        this.load.image('starfield', 'assets/img/starfield.png');
+
+       
+        this.load.image('logo', 'assets/img/logo.png');
+
         
-        // Fundo (starfield.png)
-        // É importante que o caminho 'assets/images/starfield.png' esteja correto.
-        this.load.image('starfield', 'assets/images/starfield.png');
+        this.load.image('btn_play', 'assets/img/btn_play.png');
+        this.load.image('btn_instructions', 'assets/img/btn_instructions.png');
+        this.load.image('btn_menu', 'assets/img/btn_menu.png');
+      
+        this.load.image('btn_exit', 'assets/img/btn_sair.png'); 
+
+      
+        this.load.image('meteor', 'assets/img/meteor.png');
+        this.load.image('moon', 'assets/img/moon.png');
+        this.load.image('star', 'assets/img/star.png');
         
-        // TODO: Carregar outros assets essenciais para o Menu, como o logo ou fontes customizadas.
-        // Exemplo: this.load.image('logo', 'assets/images/logo.png');
-        
-        // --- Carregamento de Sons ---
-        // TODO: Carregar a música de fundo e sons do menu.
-        // Exemplo: this.load.audio('menu_music', ['assets/audio/menu_music.mp3']);
     }
 
-    // Onde se cria instâncias de objetos e se inicia a próxima cena
     create() {
-        // Inicia a próxima Scene (MenuScene) após o carregamento completo
         console.log('Assets carregados. A iniciar MenuScene...');
         this.scene.start('MenuScene');
     }

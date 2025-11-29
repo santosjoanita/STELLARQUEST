@@ -11,7 +11,7 @@ class GameOverScene extends Phaser.Scene {
         this.add.text(this.game.config.width / 2, 100, 'GAME OVER', { fontSize: '64px', fill: '#FF0000' }).setOrigin(0.5);
         this.add.text(this.game.config.width / 2, 200, `PONTUAÇÃO: ${this.finalScore}`, { fontSize: '32px', fill: '#FFF' }).setOrigin(0.5);
 
-        // Lógica de Highscore (usando localStorage como no protótipo original)
+   
         const highscore = localStorage.getItem('stellar_highscore') || 0;
         if (this.finalScore > highscore) {
             localStorage.setItem('stellar_highscore', this.finalScore);

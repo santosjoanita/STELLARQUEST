@@ -8,13 +8,13 @@ class GameScene extends Phaser.Scene {
         this.scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '24px', fill: '#FFF' }).setScrollFactor(0);
         this.tempText = this.add.text(10, this.game.config.height - 40, 'Temperatura: Mercúrio (ALTA)', { fontSize: '24px', fill: '#FF4500' }).setScrollFactor(0);
         
-        // --- TODO: Lógica do jogador, spawners, colisões, minimapa ---
+     
     }
     update(time, delta) {
-        // --- TODO: Update do jogador, movimento dos obstáculos, dificuldade ---
+       
     }
 
-    // Função que será chamada ao colidir com um obstáculo
+    
     playerHit() {
         this.physics.pause();
         this.scene.start('GameOverScene', { score: this.score });

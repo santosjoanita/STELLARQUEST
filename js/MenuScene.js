@@ -2,29 +2,50 @@ class MenuScene extends Phaser.Scene {
     constructor() {
         super('MenuScene');
     }
+
     create() {
-        // Adicionar o fundo que foi carregado na BootScene
-        this.add.image(this.game.config.width / 2, this.game.config.height / 2, 'starfield');
+        const gameWidth = this.game.config.width;  
+        const gameHeight = this.game.config.height; 
 
-        // Adicionar título e botões
-        this.add.text(this.game.config.width / 2, 100, 'STELLAR QUEST', { fontSize: '48px', fill: '#FFD700' }).setOrigin(0.5);
+     
+        this.add.tileSprite(gameWidth / 2, gameHeight / 2, gameWidth, gameHeight, 'starfield');
 
-        // Botão JOGAR
-        const playButton = this.add.text(this.game.config.width / 2, 250, 'JOGAR', { fontSize: '32px', fill: '#00FFFF' })
-            .setInteractive()
-            .setOrigin(0.5)
-            .on('pointerdown', () => this.scene.start('GameScene')); // Inicia a GameScene
+      
+        this.add.image(gameWidth / 2, 140, 'logo').setScale(0.7); 
 
-        // Botão INSTRUÇÕES
-        const instructionsButton = this.add.text(this.game.config.width / 2, 320, 'INSTRUÇÕES', { fontSize: '32px', fill: '#00FFFF' })
-            .setInteractive()
-            .setOrigin(0.5)
-            .on('pointerdown', () => this.scene.start('InstructionsScene')); // Inicia a InstructionsScene
+        const highscore = localStorage.getItem('stellar_highscore') || 0;
+        this.add.text(gameWidth / 2, 250, `Melhor Score: ${highscore}`, { 
+            fontSize: '30px', 
+            fill: '#00FFFF' 
+        }).setOrigin(0.5).setShadow(1, 1, '#0000FF', 2);
+
         
-        // Botão SAIR (para simulação ou feature futura)
-        const exitButton = this.add.text(this.game.config.width / 2, 390, 'SAIR', { fontSize: '32px', fill: '#00FFFF' })
-            .setInteractive()
-            .setOrigin(0.5)
-            .on('pointerdown', () => { /* Lógica para sair ou fechar */ });
+        // Função para criar um botão com escala e efeitos
+        const createButton = (yPos, key, targetScene) => {
+                        const scaleFactor = 0.5; 
+            
+            const button = this.add.image(gameWidth / 2, yPos, key)
+                .setInteractive()
+                .setScale(scaleFactor); 
+
+            // Efeito Hover:
+            button.on('pointerover', () => button.setScale(scaleFactor + 0.05)); 
+            button.on('pointerout', () => button.setScale(scaleFactor));
+
+            // Ação ao clicar
+            if (targetScene) {
+                button.on('pointerdown', () => this.scene.start(targetScene));
+            } else if (key === 'btn_exit') {
+                button.on('pointerdown', () => {
+                    // Implementação básica de 'sair' para web
+                    alert('Obrigado por jogar Stellar Quest!');
+                });
+            }
+        };
+
+        // Criar Botões (Posições Y ajustadas para a escala 0.5)
+        createButton(430, 'btn_play', 'GameScene');       
+        createButton(510, 'btn_instructions', 'InstructionsScene'); 
+        createButton(590, 'btn_exit', null);            
     }
 }
