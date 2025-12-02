@@ -13,7 +13,7 @@ class GameScene extends Phaser.Scene {
             { name: 'Terra', key: 'terra', color: '#00BFFF', temp: 'MODERADA' },
             { name: 'Marte', key: 'marte', color: '#FF0000', temp: 'FRIO' },
             { name: 'Júpiter', key: 'jupiter', color: '#BDB76B', temp: 'GELADO' },
-            { name: 'Saturno', key: 'saturno', color: '#D2B48C', temp: 'MUÍSSIMO GELADO' },
+            { name: 'Saturno', key: 'saturno', color: '#D2B48C', temp: 'MUITÍSSIMO GELADO' },
             { name: 'Urano', key: 'urano', color: '#AFEEEE', temp: 'EXTREMO' },
             { name: 'Neptuno', key: 'neptuno', color: '#1E90FF', temp: 'MORTAL' }
         ];
@@ -33,38 +33,38 @@ class GameScene extends Phaser.Scene {
 
         this.starfield = this.add.tileSprite(gameWidth / 2, gameHeight / 2, gameWidth, gameHeight, 'starfield');
 
-        // --- 1. Planeta Inicial (Mercúrio) ---
+   
         this.currentPlanetImage = this.add.image(gameWidth / 2, gameHeight + 70, 'mercurio').setScale(1.5); 
         
-        // --- 2. Player (Foguetão) ---
+  
         this.player = this.physics.add.sprite(gameWidth / 2, gameHeight - 150, this.playerAssetKey);
         this.player.setCollideWorldBounds(true);
         
-        // Foguetão maior e sem animação:
-        this.player.setScale(2.0); // Foguetão maior
-        this.player.setFrame(0); // Garante que fica no frame 0 (sem animação)
+  
+        this.player.setScale(2.0); 
+        this.player.setFrame(0); 
         
-        // Ajuste no corpo de física para a nova escala (aproximado)
+
         this.player.body.setSize(20, 30).setOffset(14, 10); 
         
-        // --- 3. Controles ---
+   
         this.cursors = this.input.keyboard.createCursorKeys();
         this.wasd = {
             up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W), down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
             left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A), right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
         };
 
-        // --- 4. HUD e Minimapa ---
-        // Tempo no topo esquerdo (y=10)
+     
+
         this.timerText = this.add.text(10, 10, 'TEMPO: 00:00', { fontSize: '30px', fill: '#00FF00' }).setScrollFactor(0);
-        // Score ligeiramente abaixo (y=50)
+
         this.scoreText = this.add.text(10, 50, 'SCORE: 0', { fontSize: '30px', fill: '#FFF' }).setScrollFactor(0);
         this.tempText = this.add.text(10, gameHeight - 40, 'Temperatura:', { fontSize: '24px', fill: '#FF4500' }).setScrollFactor(0);
         
         this.createMiniMap(gameWidth, gameHeight);
         this.updateHUD(); 
 
-        // --- 5. Grupos de Física ---
+
         this.starGroup = this.physics.add.group();
         this.obstacleGroup = this.physics.add.group();
         this.planetGroup = this.physics.add.group();
@@ -73,7 +73,7 @@ class GameScene extends Phaser.Scene {
         this.time.addEvent({ delay: 1500, callback: this.spawnStar, callbackScope: this, loop: true });
         this.time.addEvent({ delay: 2000, callback: this.spawnObstacle, callbackScope: this, loop: true });
         
-        // Timer de Progressão (NOVO: Spawna o planeta de nível a cada 15s)
+        // Timer de Progressão 
         this.time.addEvent({ 
             delay: this.PLANET_SPAWN_INTERVAL, 
             callback: this.spawnLevelPlanet, 
@@ -81,10 +81,10 @@ class GameScene extends Phaser.Scene {
             loop: true 
         });
         
-        // Timer para Remover a Imagem Inicial de Mercúrio
+    
         this.time.delayedCall(5000, this.removeInitialPlanet, [], this); 
 
-        // NOVO: Timer para Contar o Tempo de Jogo
+
         this.time.addEvent({ 
             delay: 1000, 
             callback: this.updateGameTime, 
@@ -98,9 +98,7 @@ class GameScene extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.planetGroup, this.levelAdvanceHit, null, this);
     }
     
-    // ===================================
-    // LÓGICA DE JOGO E PROGRESSÃO
-    // ===================================
+
     
     update(time, delta) {
         this.starfield.tilePositionY -= 2; 
@@ -112,7 +110,7 @@ class GameScene extends Phaser.Scene {
         const minutes = Math.floor(this.gameTime / 60);
         const seconds = this.gameTime % 60;
         
-        // Formata para MM:SS
+
         const timeString = `TEMPO: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         this.timerText.setText(timeString);
     }
@@ -148,24 +146,22 @@ class GameScene extends Phaser.Scene {
     spawnLevelPlanet() {
         const nextLevel = this.currentLevel + 1;
 
-        // Se o próximo nível for o último ou já o tiver passado (Neptuno), para de spawnar
+
         if (nextLevel >= this.planetData.length) {
             return;
         }
 
-        const planetData = this.planetData[nextLevel]; // Spawna o PRÓXIMO planeta
+        const planetData = this.planetData[nextLevel];
         const gameWidth = this.game.config.width;
         
         const planet = this.planetGroup.create(gameWidth / 2, -100, planetData.key);
         
-        planet.setScale(0.3); 
-        planet.setAlpha(0.7);
+        planet.setScale(0.8); 
         planet.setImmovable(true); 
 
-        // Move o planeta de cima para baixo
+
         this.physics.moveTo(planet, gameWidth / 2, this.game.config.height + 100, 100); 
 
-        // Limpeza do planeta que sai da tela
         planet.checkWorldBounds = true;
         planet.onWorldBounds = (body) => {
              if (body.y > this.game.config.height) {
@@ -204,7 +200,7 @@ class GameScene extends Phaser.Scene {
         this.scene.start('GameOverScene', { score: this.score });
     }
     
-    // --- SPANWERS DE OBSTÁCULOS (Sem Alterações) ---
+
     spawnStar() {
         const gameWidth = this.game.config.width;
         const x = Phaser.Math.Between(50, gameWidth - 50);
