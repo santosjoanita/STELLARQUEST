@@ -13,6 +13,7 @@ const config = {
     scene: [
         BootScene, 
         MenuScene, 
+        SelectionScene,
         InstructionsScene, 
         GameScene, 
         GameOverScene

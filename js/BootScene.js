@@ -3,57 +3,42 @@ class BootScene extends Phaser.Scene {
         super('BootScene');
     }
     preload() {
-        const progressBar = this.add.graphics();
-        const progressBox = this.add.graphics();
-        progressBox.fillStyle(0x222222, 0.8);
-        progressBox.fillRect(240, 270, 320, 50);
+     
 
-        const width = this.cameras.main.width;
-        const height = this.cameras.main.height;
-        const loadingText = this.make.text({
-            x: width / 2,
-            y: height / 2 - 50,
-            text: 'Carregando Stellar Quest...',
-            style: {
-                font: '20px monospace',
-                fill: '#ffffff'
-            }
-        }).setOrigin(0.5, 0.5);
-
-        this.load.on('progress', function (value) {
-            progressBar.clear();
-            progressBar.fillStyle(0xffffff, 1);
-            progressBar.fillRect(250, 280, 300 * value, 30);
-        });
-
-        this.load.on('complete', function () {
-            progressBar.destroy();
-            progressBox.destroy();
-            loadingText.destroy();
-        });
-
-       
-        this.load.image('starfield', 'assets/img/starfield.png');
-
-       
-        this.load.image('logo', 'assets/img/logo.png');
-
+        const BASE_PATH = 'assets/img/'; 
+        const SHIP_PATH = BASE_PATH + 'Spaceship/';
+        const PLANET_PATH = BASE_PATH + 'planetas/';
+        const frameConfig = { frameWidth: 48, frameHeight: 48 }; 
         
-        this.load.image('btn_play', 'assets/img/btn_play.png');
-        this.load.image('btn_instructions', 'assets/img/btn_instructions.png');
-        this.load.image('btn_menu', 'assets/img/btn_menu.png');
-      
-        this.load.image('btn_exit', 'assets/img/btn_sair.png'); 
-
-      
-        this.load.image('meteor', 'assets/img/meteor.png');
-        this.load.image('moon', 'assets/img/moon.png');
-        this.load.image('star', 'assets/img/star.png');
+        // --- SPRITESHEETS DAS NAVES ---
+        this.load.spritesheet('ship_blue', SHIP_PATH + 'blue.png', frameConfig);
+        this.load.spritesheet('ship_green', SHIP_PATH + 'green.png', frameConfig);
+        this.load.spritesheet('ship_red', SHIP_PATH + 'red.png', frameConfig);
         
+        this.load.image('starfield', BASE_PATH + 'starfield.png');
+        this.load.image('logo', BASE_PATH + 'logo.png');
+        this.load.image('btn_play', BASE_PATH + 'btn_play.png');
+        this.load.image('btn_instructions', BASE_PATH + 'btn_instructions.png');
+        this.load.image('btn_menu', BASE_PATH + 'btn_menu.png');
+        this.load.image('btn_exit', BASE_PATH + 'btn_sair.png'); 
+        this.load.image('btn_iniciar_viagem', BASE_PATH + 'iniciarviagem.png');
+        this.load.image('btn_restart', BASE_PATH + 'btn_restart.png');
+        this.load.image('meteor', BASE_PATH + 'meteor.png');
+        this.load.image('moon', BASE_PATH + 'moon.png');
+        this.load.image('star', BASE_PATH + 'star.png');
+
+        // CARREGAMENTO DOS PLANETAS 
+        this.load.image('mercurio', PLANET_PATH + 'mercurio.png');
+        this.load.image('venus', PLANET_PATH + 'vénus.png'); 
+        this.load.image('terra', PLANET_PATH + 'terra.png');
+        this.load.image('marte', PLANET_PATH + 'marte.png');
+        this.load.image('jupiter', PLANET_PATH + 'júpiter.png'); 
+        this.load.image('saturno', PLANET_PATH + 'saturno.png');
+        this.load.image('urano', PLANET_PATH + 'urano.png');
+        this.load.image('neptuno', PLANET_PATH + 'neptuno.png'); 
     }
 
     create() {
-        console.log('Assets carregados. A iniciar MenuScene...');
         this.scene.start('MenuScene');
     }
 }

@@ -7,9 +7,7 @@ class MenuScene extends Phaser.Scene {
         const gameWidth = this.game.config.width;  
         const gameHeight = this.game.config.height; 
 
-     
         this.add.tileSprite(gameWidth / 2, gameHeight / 2, gameWidth, gameHeight, 'starfield');
-
       
         this.add.image(gameWidth / 2, 140, 'logo').setScale(0.7); 
 
@@ -20,31 +18,31 @@ class MenuScene extends Phaser.Scene {
         }).setOrigin(0.5).setShadow(1, 1, '#0000FF', 2);
 
         
-        // Função para criar um botão com escala e efeitos
-        const createButton = (yPos, key, targetScene) => {
-                        const scaleFactor = 0.5; 
-            
+       const createButton = (yPos, key, targetScene) => {
+         let scaleFactor = 0.5; 
+    
+        if (key === 'btn_instructions') {
+        scaleFactor = 0.11; 
+    }
+
             const button = this.add.image(gameWidth / 2, yPos, key)
                 .setInteractive()
                 .setScale(scaleFactor); 
 
-            // Efeito Hover:
             button.on('pointerover', () => button.setScale(scaleFactor + 0.05)); 
             button.on('pointerout', () => button.setScale(scaleFactor));
 
-            // Ação ao clicar
             if (targetScene) {
                 button.on('pointerdown', () => this.scene.start(targetScene));
             } else if (key === 'btn_exit') {
                 button.on('pointerdown', () => {
-                    // Implementação básica de 'sair' para web
                     alert('Obrigado por jogar Stellar Quest!');
                 });
             }
         };
 
-        // Criar Botões (Posições Y ajustadas para a escala 0.5)
-        createButton(430, 'btn_play', 'GameScene');       
+        // Criar Botões
+        createButton(430, 'btn_play', 'SelectionScene'); 
         createButton(510, 'btn_instructions', 'InstructionsScene'); 
         createButton(590, 'btn_exit', null);            
     }
