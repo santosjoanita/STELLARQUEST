@@ -37,16 +37,14 @@ class GameScene extends Phaser.Scene {
         this.currentPlanetImage = this.add.image(gameWidth / 2, gameHeight + 70, 'mercurio').setScale(1.5); 
         
   
+        // --- 2. Player ---
         this.player = this.physics.add.sprite(gameWidth / 2, gameHeight - 150, this.playerAssetKey);
         this.player.setCollideWorldBounds(true);
         
-  
-        this.player.setScale(2.0); 
+        
+        this.player.setScale(1.5); 
         this.player.setFrame(0); 
-        
-
-        this.player.body.setSize(20, 30).setOffset(14, 10); 
-        
+        this.player.body.setSize(30, 30).setOffset(17, 17);
    
         this.cursors = this.input.keyboard.createCursorKeys();
         this.wasd = {

@@ -1,7 +1,7 @@
 class SelectionScene extends Phaser.Scene {
     constructor() {
         super('SelectionScene');
-        this.selectedShipKey = 'ship_blue';
+        this.selectedShipKey = 'ship_rocket1'; 
     }
 
     create() {
@@ -21,76 +21,56 @@ class SelectionScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         const scaleFactor = 0.15; 
-        const hoverScale = scaleFactor + 0.02; 
-
-      this.confirmButton = this.add.image(gameWidth / 2, gameHeight - 100, 'btn_iniciar_viagem')
+        const hoverScale = scaleFactor + 0.03; 
+        
+        // Botão INICIAR VIAGEM
+        this.confirmButton = this.add.image(gameWidth / 2, gameHeight - 100, 'btn_iniciar_viagem')
              .setInteractive()
              .setScale(scaleFactor)
-             .on('pointerover', () => { 
-              
-                 this.confirmButton.setScale(hoverScale);
-
-             })
-             .on('pointerout', () => { 
-               
-                 this.confirmButton.setScale(scaleFactor);
-             })
+             .on('pointerover', () => { this.confirmButton.setScale(hoverScale); })
+             .on('pointerout', () => { this.confirmButton.setScale(scaleFactor); })
              .on('pointerdown', this.startGame, this);
 
-        
         
         // --- 2. Criação dos Seletores da Nave ---
         
         const yPos = gameHeight / 2 - 50;
-        const scale = 3;
-        const frameStart = 0; 
-        const frameEnd = 1; 
-        const animationRate = 12;
-
-        const xPos_Blue = gameWidth * 0.20; 
-        const xPos_Green = gameWidth * 0.45; 
-        const xPos_Red = gameWidth * 0.70; 
+        const scale = 3; 
         
-     
+        const xPos_R1 = gameWidth * 0.33; 
+        const xPos_R2 = gameWidth * 0.66; 
         const text_y_offset = 120; 
 
-        const createShipSelector = (xPos, key, color) => {
-            const ship = this.add.sprite(xPos, yPos, key).setScale(scale).setInteractive();
-            
-            
+       
+        const createShipSelector = (xPos, key, displayName, color) => {
+           
+            const ship = this.add.sprite(xPos, yPos, key, 0).setScale(scale).setInteractive(); 
 
-        
-            this.add.text(xPos, yPos + text_y_offset, key.split('_')[1].toUpperCase(), { fontSize: '24px', fill: color }).setOrigin(0.5);
+            this.add.text(xPos, yPos + text_y_offset, displayName, { fontSize: '24px', fill: color }).setOrigin(0.5);
 
             // Efeito Hover
-            ship.on('pointerover', () => {
-                ship.setScale(scale * 1.1); 
-         
-            });
-            
-            ship.on('pointerout', () => {
-                ship.setScale(scale);      
-               
-            });
+            ship.on('pointerover', () => { ship.setScale(scale * 1.1); });
+            ship.on('pointerout', () => { ship.setScale(scale); });
             
             ship.on('pointerdown', () => {
-                this.selectShip(key, color);
+                this.selectShip(key, color, displayName); 
             });
             
             return ship;
         };
         
-        // Criar as três naves (seletores) com as novas posições X
-        createShipSelector(xPos_Blue, 'ship_blue', '#00FFFF');
-        createShipSelector(xPos_Green, 'ship_green', '#00FF00');
-        createShipSelector(xPos_Red, 'ship_red', '#FF0000');
+        // Criar as duas novas naves
+        createShipSelector(xPos_R1, 'ship_rocket1', 'FOGUETE CLÁSSICO', '#00FFFF');
+        createShipSelector(xPos_R2, 'ship_rocket2', 'FOGUETE DE CAÇA', '#FF0000');
         
-        this.selectShip('ship_blue', '#00FFFF');
+  
+        this.selectShip('ship_rocket1', '#00FFFF', 'FOGUETE CLÁSSICO');
     }
     
-    selectShip(key, color) {
+    selectShip(key, color, displayName) {
         this.selectedShipKey = key;
-        this.selectionText.setText(`Nave ${key.split('_')[1].toUpperCase()} selecionada!`); 
+        // Usa o displayName para o texto
+        this.selectionText.setText(`${displayName} selecionado!`); 
         this.selectionText.setFill(color); 
         this.confirmButton.setAlpha(1);
     }
