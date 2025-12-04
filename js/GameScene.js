@@ -112,16 +112,29 @@ class GameScene extends Phaser.Scene {
         const timeString = `TEMPO: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         this.timerText.setText(timeString);
     }
-
+    
     handlePlayerMovement() {
         this.player.setVelocity(0); 
         const speed = this.playerSpeed;
+        
+        if (this.cursors.up.isDown || this.wasd.up.isDown) { 
+            this.player.setVelocityY(-speed); 
+        } 
+        else if (this.cursors.down.isDown || this.wasd.down.isDown) { 
+            this.player.setVelocityY(speed); 
+        }
 
-        if (this.cursors.left.isDown || this.wasd.left.isDown) { this.player.setVelocityX(-speed); } 
-        else if (this.cursors.right.isDown || this.wasd.right.isDown) { this.player.setVelocityX(speed); }
-
-        if (this.cursors.up.isDown || this.wasd.up.isDown) { this.player.setVelocityY(-speed); } 
-        else if (this.cursors.down.isDown || this.wasd.down.isDown) { this.player.setVelocityY(speed); }
+        if (this.cursors.left.isDown || this.wasd.left.isDown) { 
+            this.player.setVelocityX(-speed); 
+            this.player.setFrame(1);
+        } 
+        else if (this.cursors.right.isDown || this.wasd.right.isDown) { 
+            this.player.setVelocityX(speed); 
+            this.player.setFrame(2); 
+        }
+        else {
+            this.player.setFrame(0);
+        }
         
         this.player.body.velocity.normalize().scale(speed);
     }
@@ -168,23 +181,46 @@ class GameScene extends Phaser.Scene {
         };
     }
     
+   // GameScene.js
+
     levelAdvanceHit(player, planet) {
+        if (!player || !planet || !planet.body) {
+            return;
+        }
+         this.isInvulnerable = true; 
         planet.disableBody(true, true);
+        
+        this.advanceLevel(); 
         
         this.cameras.main.shake(300, 0.02); 
         this.cameras.main.flash(300, 255, 255, 255); 
         
-        this.advanceLevel();
+        this.time.delayedCall(500, () => {
+            this.isInvulnerable = false;
+        }, [], this); 
     }
     
-    advanceLevel() {
-        if (this.currentLevel < this.planetData.length - 1) {
+
+
+   advanceLevel() {
+        const finalPlanetIndex = this.planetData.length - 1;
+
+        if (this.currentLevel < finalPlanetIndex) {
             this.currentLevel++;
-            this.playerSpeed += 50; 
-            this.updateHUD();
         } else {
-            this.scene.start('GameOverScene', { score: this.score, completed: true });
+            return; 
         }
+        
+        this.updateHUD(); 
+
+ 
+        if (this.currentLevel === finalPlanetIndex) { 
+            
+            this.scene.start('GameOverScene', { score: this.score, completed: true });
+            return; 
+        }
+        
+        this.playerSpeed += 50; 
     }
 
     collectStar(player, star) {

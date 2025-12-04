@@ -4,7 +4,6 @@ class GameOverScene extends Phaser.Scene {
     }
     
     init(data) {
-        // Garantir que os dados existem, mesmo que a cena seja iniciada sem eles
         this.finalScore = data.score || 0;
         this.gameCompleted = data.completed || false;
         this.defaultScale = 0.13; 
@@ -41,7 +40,7 @@ class GameOverScene extends Phaser.Scene {
 
         // --- Lógica de Highscore ---
         const highscore = localStorage.getItem('stellar_highscore') || 0;
-        if (this.finalScore > parseInt(highscore)) { // Convert to int for proper comparison
+        if (this.finalScore > parseInt(highscore)) { 
             localStorage.setItem('stellar_highscore', this.finalScore);
             this.add.text(this.game.config.width / 2, highscoreY, 'NOVO HIGHSCORE!', { fontSize: '28px', fill: '#00FF00' }).setOrigin(0.5);
             this.add.text(this.game.config.width / 2, bestScoreY, `MELHOR SCORE: ${this.finalScore}`, { fontSize: '24px', fill: '#AAA' }).setOrigin(0.5);
@@ -51,25 +50,26 @@ class GameOverScene extends Phaser.Scene {
         
         // --- BOTÕES ---
         const restartButtonY = 450;
-        const menuButtonY = 550; // Posiciona abaixo do botão de reiniciar
+        const menuButtonY = 550;
         
-        // 1. Botão REINICIAR (Inicia a SelectionScene)
+        // 1. Botão REINICIAR 
         this.createButton(
             this.game.config.width / 2, 
             restartButtonY, 
             'btn_restart', 
             'RECOMEÇAR VIAGEM', 
-            () => { this.scene.start('SelectionScene'); }
+            () => { this.scene.start('GameScene'); }
         );
-        
-        // 2. Botão MENU (Volta ao MenuScene)
-        this.createButton(
-            this.game.config.width / 2, 
+
+         this.createButton(
+            this.game.config.width / 2,
             menuButtonY, 
-            'btn_restart', 
+            'btn_menu', 
             'MENU PRINCIPAL', 
             () => { this.scene.start('MenuScene'); }
         );
+        
+     
     }
     
 
@@ -91,7 +91,6 @@ class GameOverScene extends Phaser.Scene {
             button.setScale(this.defaultScale);
         });
         
-        // Ação ao clicar
         button.on('pointerdown', callback);
         
         return button;

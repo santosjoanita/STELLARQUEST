@@ -11,7 +11,7 @@ class BootScene extends Phaser.Scene {
         const frameConfig = { frameWidth: 48, frameHeight: 48 }; 
         
         // --- SPRITESHEETS DAS NAVES ---
-      this.load.spritesheet('ship_rocket1', SHIP_PATH + 'rocket1.png', { frameWidth: 32, frameHeight: 32 }); 
+      this.load.spritesheet('ship_rocket1', SHIP_PATH + 'rocket1.png', { frameWidth: 64, frameHeight: 64 }); 
     this.load.spritesheet('ship_rocket2', SHIP_PATH + 'rocket2.png', { frameWidth: 64, frameHeight: 64 });
     
         
