@@ -30,7 +30,7 @@ class BootScene extends Phaser.Scene {
         // CARREGAMENTO DOS PLANETAS 
         this.load.image('mercurio', PLANET_PATH + 'mercurio.png');
         this.load.image('venus', PLANET_PATH + 'vénus.png'); 
-        this.load.image('terra', PLANET_PATH + 'terra.png');
+        this.load.spritesheet('terra', PLANET_PATH + 'terra.png', { frameWidth: 128, frameHeight: 128 });
         this.load.image('marte', PLANET_PATH + 'marte.png');
         this.load.image('jupiter', PLANET_PATH + 'júpiter.png'); 
         this.load.image('saturno', PLANET_PATH + 'saturno.png');

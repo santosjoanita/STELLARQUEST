@@ -34,7 +34,7 @@ class GameScene extends Phaser.Scene {
         this.starfield = this.add.tileSprite(gameWidth / 2, gameHeight / 2, gameWidth, gameHeight, 'starfield');
 
    
-        this.currentPlanetImage = this.add.image(gameWidth / 2, gameHeight + 70, 'mercurio').setScale(1.5); 
+        this.currentPlanetImage = this.add.image(gameWidth / 2, gameHeight + 10, 'mercurio').setScale(1.5); 
         
   
         // --- 2. Player ---
@@ -51,7 +51,12 @@ class GameScene extends Phaser.Scene {
             up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W), down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
             left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A), right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
         };
-
+        this.anims.create({
+            key: 'terra_spin',
+            frames: this.anims.generateFrameNumbers('terra', { start: 0, end: 3 }), 
+            frameRate: 8, 
+            repeat: -1 
+        });
      
 
         this.timerText = this.add.text(10, 10, 'TEMPO: 00:00', { fontSize: '30px', fill: '#00FF00' }).setScrollFactor(0);
@@ -153,23 +158,25 @@ class GameScene extends Phaser.Scene {
         }
     }
     
-    // --- SPAWNER DE PLANETAS DE NÍVEL (CORRIGIDO) ---
+
     spawnLevelPlanet() {
         const nextLevel = this.currentLevel + 1;
-
+        const gameWidth = this.game.config.width;
 
         if (nextLevel >= this.planetData.length) {
             return;
         }
 
         const planetData = this.planetData[nextLevel];
-        const gameWidth = this.game.config.width;
         
         const planet = this.planetGroup.create(gameWidth / 2, -100, planetData.key);
         
+        if (planetData.key === 'terra') {
+            planet.play('terra_spin');
+        }
+        
         planet.setScale(0.8); 
         planet.setImmovable(true); 
-
 
         this.physics.moveTo(planet, gameWidth / 2, this.game.config.height + 100, 100); 
 
@@ -261,7 +268,9 @@ class GameScene extends Phaser.Scene {
         
         obstacle.setVelocityY(150 + (this.currentLevel * 50)); 
         obstacle.setAngularVelocity(Phaser.Math.Between(-100, 100));
+        
     }
+    
     
     // ===================================
     // MÉTODOS DO MINI MAPA E HUD
