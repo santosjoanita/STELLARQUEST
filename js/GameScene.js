@@ -36,7 +36,10 @@ class GameScene extends Phaser.Scene {
    
         this.currentPlanetImage = this.add.image(gameWidth / 2, gameHeight + 10, 'mercurio').setScale(1.5); 
         
-  
+        this.sound.play('whoosh');
+        this.music = this.sound.add('music', { volume: 0.5, loop: true }); 
+        this.music.play();
+
         // --- 2. Player ---
         this.player = this.physics.add.sprite(gameWidth / 2, gameHeight - 150, this.playerAssetKey);
         this.player.setCollideWorldBounds(true);
@@ -51,12 +54,7 @@ class GameScene extends Phaser.Scene {
             up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W), down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
             left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A), right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
         };
-        this.anims.create({
-            key: 'terra_spin',
-            frames: this.anims.generateFrameNumbers('terra', { start: 0, end: 3 }), 
-            frameRate: 8, 
-            repeat: -1 
-        });
+       
      
 
         this.timerText = this.add.text(10, 10, 'TEMPO: 00:00', { fontSize: '30px', fill: '#00FF00' }).setScrollFactor(0);
@@ -222,6 +220,7 @@ class GameScene extends Phaser.Scene {
 
  
         if (this.currentLevel === finalPlanetIndex) { 
+            this.sound.play('victory');
             
             this.scene.start('GameOverScene', { score: this.score, completed: true });
             return; 
@@ -234,10 +233,15 @@ class GameScene extends Phaser.Scene {
         star.disableBody(true, true);
         this.score += 20;
         this.updateHUD();
+        this.sound.play('star');
     }
 
     playerHit() {
         this.physics.pause();
+        this.sound.play('lose');
+        if (this.music) {
+            this.music.stop();
+        }
         this.scene.start('GameOverScene', { score: this.score });
     }
     

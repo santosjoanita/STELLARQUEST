@@ -14,7 +14,8 @@ class GameOverScene extends Phaser.Scene {
          const gameWidth = this.game.config.width;
         const gameHeight = this.game.config.height;
 
-        this.add.tileSprite(gameWidth / 2, gameHeight / 2, gameWidth, gameHeight, 'starfield');
+        this.add.image(gameWidth / 2, gameHeight / 2, 'solar') 
+            .setDisplaySize(gameWidth, gameHeight);
 
         
         // --- TÍTULO E MENSAGEM ---
@@ -58,7 +59,10 @@ class GameOverScene extends Phaser.Scene {
             restartButtonY, 
             'btn_restart', 
             'RECOMEÇAR VIAGEM', 
-            () => { this.scene.start('GameScene'); }
+            () => { 
+                 this.sound.play('click');
+                this.scene.start('GameScene'); 
+            }
         );
 
          this.createButton(
@@ -66,7 +70,10 @@ class GameOverScene extends Phaser.Scene {
             menuButtonY, 
             'btn_menu', 
             'MENU PRINCIPAL', 
-            () => { this.scene.start('MenuScene'); }
+            () => { 
+                this.sound.play('click');
+                this.scene.start('MenuScene');
+             }
         );
         
      

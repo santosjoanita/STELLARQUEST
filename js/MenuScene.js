@@ -7,15 +7,16 @@ class MenuScene extends Phaser.Scene {
         const gameWidth = this.game.config.width;  
         const gameHeight = this.game.config.height; 
 
-        this.add.tileSprite(gameWidth / 2, gameHeight / 2, gameWidth, gameHeight, 'starfield');
+        this.add.image(gameWidth / 2, gameHeight / 2, 'solar') 
+            .setDisplaySize(gameWidth, gameHeight);
       
-        this.add.image(gameWidth / 2, 140, 'logo').setScale(0.7); 
+        this.add.image(gameWidth / 2, 140, 'logo').setScale(1.0); 
 
         const highscore = localStorage.getItem('stellar_highscore') || 0;
         this.add.text(gameWidth / 2, 250, `Melhor Score: ${highscore}`, { 
             fontSize: '30px', 
             fill: '#00FFFF' 
-        }).setOrigin(0.5).setShadow(1, 1, '#0000FF', 2);
+        }).setOrigin(0.5).setShadow(1, 1, '#ba0b0bff', 2);
 
         
        const createButton = (yPos, key, targetScene) => {
@@ -33,12 +34,16 @@ class MenuScene extends Phaser.Scene {
             button.on('pointerout', () => button.setScale(scaleFactor));
 
             if (targetScene) {
-                button.on('pointerdown', () => this.scene.start(targetScene));
-            } else if (key === 'btn_exit') {
-                button.on('pointerdown', () => {
-                    alert('Obrigado por jogar Stellar Quest!');
-                });
-            }
+        button.on('pointerdown', () => {
+            this.sound.play('click'); 
+            this.scene.start(targetScene);
+        });
+         }  else if (key === 'btn_exit') {
+        button.on('pointerdown', () => {
+            this.sound.play('click'); 
+            alert('Obrigado por jogar Stellar Quest!');
+        });
+    }
         };
 
         // Criar Botões

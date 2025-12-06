@@ -7,8 +7,9 @@ class SelectionScene extends Phaser.Scene {
     create() {
         const gameWidth = this.game.config.width;
         const gameHeight = this.game.config.height;
-
-        this.add.tileSprite(gameWidth / 2, gameHeight / 2, gameWidth, gameHeight, 'starfield');
+        
+        this.add.image(gameWidth / 2, gameHeight / 2, 'solar') 
+            .setDisplaySize(gameWidth, gameHeight);
 
         this.add.text(gameWidth / 2, 70, 'ESCOLHA O SEU AVATAR', { 
             fontSize: '40px', 
