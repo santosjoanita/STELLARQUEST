@@ -60,7 +60,7 @@ class GameOverScene extends Phaser.Scene {
             'btn_restart', 
             () => { 
                 this.sound.play('click');
-                this.scene.start('SelectionScene'); 
+                this.scene.start('GameScene'); 
             }
         );
 

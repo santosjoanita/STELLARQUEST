@@ -62,7 +62,7 @@ class SelectionScene extends Phaser.Scene {
         
         // Criar as duas novas naves
         createShipSelector(xPos_R1, 'ship_rocket1', 'FOGUETE CLÁSSICO', '#00FFFF');
-        createShipSelector(xPos_R2, 'ship_rocket2', 'FOGUETE DE CAÇA', '#FF0000');
+        createShipSelector(xPos_R2, 'ship_rocket2', 'FOGUETE DE CAÇA', '#fff240ff');
         
   
         this.selectShip('ship_rocket1', '#00FFFF', 'FOGUETE CLÁSSICO');

@@ -1,14 +1,9 @@
 class GameScene extends Phaser.Scene {
     constructor() {
         super('GameScene');
-        this.score = 0;
-        this.currentLevel = 0; 
-        this.playerSpeed = 400; 
-        this.PLANET_SPAWN_INTERVAL = 15000; 
-        this.gameTime = 0; 
+        this.PLANET_SPAWN_INTERVAL = 15000;
         this.isInvulnerable = false;
         
-        //Mapeamento de Frames do ROCKET 1 
         this.rocket1Frames = {
             up: 4, up_right: 3, up_left: 5,
             right: 2, left: 6,
@@ -33,6 +28,10 @@ class GameScene extends Phaser.Scene {
 
     init(data) {
         this.playerAssetKey = data.shipKey || 'ship_blue'; 
+        this.score = 0;
+        this.currentLevel = 0;
+        this.gameTime = 0;
+        this.playerSpeed = 400; 
     }
 
     create() {
@@ -41,14 +40,15 @@ class GameScene extends Phaser.Scene {
 
         this.starfield = this.add.tileSprite(gameWidth / 2, gameHeight / 2, gameWidth, gameHeight, 'starfield');
 
+        // BARREIRAS LOCALIZADAS
+        this.physics.world.setBounds(0, 0, gameWidth, gameHeight); 
         
         const MAP_WIDTH = 130;
         const PADDING = 15;
         const MAP_HEIGHT = 190; 
         const mapContainerX = gameWidth - PADDING - MAP_WIDTH; 
         const mapContainerY = gameHeight - PADDING - MAP_HEIGHT; 
-
-        // Barreira do Mini Mapa
+        
         this.miniMapBarrier = this.add.zone(mapContainerX, mapContainerY, MAP_WIDTH + PADDING, MAP_HEIGHT + PADDING).setOrigin(0, 0);
         this.physics.world.enable(this.miniMapBarrier);
         this.miniMapBarrier.body.setImmovable(true).moves = false;
@@ -59,8 +59,6 @@ class GameScene extends Phaser.Scene {
         this.hudBarrier = this.add.zone(0, hudBarrierY, gameWidth, BOTTOM_RESTRICTION_Y).setOrigin(0, 0);
         this.physics.world.enable(this.hudBarrier);
         this.hudBarrier.body.setImmovable(true).moves = false;
-
-        this.physics.world.setBounds(0, 0, gameWidth, gameHeight);
 
 
         this.currentPlanetImage = this.add.image(gameWidth / 2, gameHeight + 10, 'mercurio').setScale(1.5); 
@@ -75,14 +73,12 @@ class GameScene extends Phaser.Scene {
         this.player.setScale(1.5); 
         this.player.setFrame(0); 
         this.player.body.setSize(30, 30).setOffset(17, 17);
-   
         this.cursors = this.input.keyboard.createCursorKeys();
         this.wasd = {
             up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W), down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
             left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A), right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
         };
        
-     
         this.timerText = this.add.text(10, 10, 'TEMPO: 00:00', { fontSize: '30px', fill: '#00FF00' }).setScrollFactor(0);
         this.scoreText = this.add.text(10, 50, 'SCORE: 0', { fontSize: '30px', fill: '#FFF' }).setScrollFactor(0);
         this.tempText = this.add.text(10, gameHeight - 40, 'Temperatura:', { fontSize: '24px', fill: '#FF4500' }).setScrollFactor(0);
@@ -91,9 +87,6 @@ class GameScene extends Phaser.Scene {
         this.updateHUD(); 
 
         // CRIAÇÃO DAS ANIMAÇÕES 
-        
-        this.anims.create({ key: 'terra_spin', frames: this.anims.generateFrameNumbers('terra', { start: 0, end: 3 }), frameRate: 8, repeat: -1 });
-
         if (this.playerAssetKey === 'ship_rocket2') {
             const frameRate = 10;
             const createShip2Anim = (key, startFrame1Based) => {
@@ -106,38 +99,36 @@ class GameScene extends Phaser.Scene {
                 });
             };
             
-            createShip2Anim('up', 1);       
+            createShip2Anim('up', 1); 
             createShip2Anim('up_right', 4); 
-            createShip2Anim('right', 7);    
+            createShip2Anim('right', 7); 
             createShip2Anim('down_right', 10); 
             createShip2Anim('up_left', 13); 
-            createShip2Anim('left', 16);    
+            createShip2Anim('left', 16); 
             createShip2Anim('down_left', 19); 
-            createShip2Anim('down', 22);    
+            createShip2Anim('down', 22); 
         }
-
 
         this.starGroup = this.physics.add.group();
         this.obstacleGroup = this.physics.add.group();
         this.planetGroup = this.physics.add.group();
         
-        // Spawners e Timers
-        this.time.addEvent({ delay: 1500, callback: this.spawnStar, callbackScope: this, loop: true });
-        this.time.addEvent({ delay: 2000, callback: this.spawnObstacle, callbackScope: this, loop: true });
-        this.time.addEvent({ delay: this.PLANET_SPAWN_INTERVAL, callback: this.spawnLevelPlanet, callbackScope: this, loop: true });
+        // Spawners e Timers (Armazenar referências para cleanup)
+        this.starTimer = this.time.addEvent({ delay: 1500, callback: this.spawnStar, callbackScope: this, loop: true });
+        this.obstacleTimer = this.time.addEvent({ delay: 2000, callback: this.spawnObstacle, callbackScope: this, loop: true });
+        this.planetTimer = this.time.addEvent({ delay: this.PLANET_SPAWN_INTERVAL, callback: this.spawnLevelPlanet, callbackScope: this, loop: true });
         this.time.delayedCall(5000, this.removeInitialPlanet, [], this); 
-        this.time.addEvent({ delay: 1000, callback: this.updateGameTime, callbackScope: this, loop: true });
+        this.gameTimeTimer = this.time.addEvent({ delay: 1000, callback: this.updateGameTime, callbackScope: this, loop: true });
 
         // Colisões
         this.physics.add.overlap(this.player, this.starGroup, this.collectStar, null, this);
         this.physics.add.collider(this.player, this.obstacleGroup, this.playerHit, null, this);
         this.physics.add.overlap(this.player, this.planetGroup, this.levelAdvanceHit, null, this);
-        
         this.physics.add.collider(this.player, this.miniMapBarrier);
         this.physics.add.collider(this.player, this.hudBarrier);
     }
     
-
+    
     
     update(time, delta) {
         this.starfield.tilePositionY -= 2; 
@@ -152,7 +143,6 @@ class GameScene extends Phaser.Scene {
         this.timerText.setText(timeString);
     }
     
-    // --- LÓGICA DE MOVIMENTO DE 8 DIREÇÕES ---
     handlePlayerMovement() {
         this.player.setVelocity(0); 
         const speed = this.playerSpeed;
@@ -172,7 +162,7 @@ class GameScene extends Phaser.Scene {
         const vx = this.player.body.velocity.x;
         const vy = this.player.body.velocity.y;
         
-      
+        // LÓGICA DE ANIMAÇÃO
         if (this.playerAssetKey === 'ship_rocket2') {
             let animKey = 'ship2_up'; 
 
@@ -192,7 +182,6 @@ class GameScene extends Phaser.Scene {
 
             this.player.play(animKey, true);
 
-        // ROCKET 1 
         } else if (this.playerAssetKey === 'ship_rocket1') {
             let directionKey = '';
             
@@ -245,9 +234,7 @@ class GameScene extends Phaser.Scene {
         
         const planet = this.planetGroup.create(gameWidth / 2, -100, planetData.key);
         
-        if (planetData.key === 'terra') {
-            planet.play('terra_spin');
-        }
+        // A animação da Terra foi removida, pois a imagem é um asset estático
         
         planet.setScale(0.8); 
         planet.setImmovable(true); 
