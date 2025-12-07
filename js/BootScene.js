@@ -18,10 +18,11 @@ class BootScene extends Phaser.Scene {
         this.load.audio('lose', AUDIO_PATH + 'lose.wav');
         this.load.audio('star', AUDIO_PATH + 'star.wav');
         this.load.audio('whoosh', AUDIO_PATH + 'whoosh.wav');
+        this.load.audio('explosao', AUDIO_PATH + 'explosao.mp3');
         
         // --- SPRITESHEETS DAS NAVES ---
       this.load.spritesheet('ship_rocket1', SHIP_PATH + 'rocket1.png', { frameWidth: 64, frameHeight: 64 }); 
-    this.load.spritesheet('ship_rocket2', SHIP_PATH + 'rocket2.png', { frameWidth: 64, frameHeight: 64 });
+      this.load.spritesheet('ship_rocket2', SHIP_PATH + 'rocket2.png', { frameWidth: 64, frameHeight: 64 });
     
         this.load.image('solar', BASE_PATH + 'solar.jpg');
         this.load.image('starfield', BASE_PATH + 'starfield.png');

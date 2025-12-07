@@ -6,6 +6,14 @@ class GameScene extends Phaser.Scene {
         this.playerSpeed = 400; 
         this.PLANET_SPAWN_INTERVAL = 15000; 
         this.gameTime = 0; 
+        this.isInvulnerable = false;
+        
+        //Mapeamento de Frames do ROCKET 1 
+        this.rocket1Frames = {
+            up: 4, up_right: 3, up_left: 5,
+            right: 2, left: 6,
+            down: 0, down_right: 1, down_left: 7
+        };
         
         this.planetData = [
             { name: 'Mercúrio', key: 'mercurio', color: '#FF4500', temp: 'MUITO ALTA' },
@@ -33,18 +41,37 @@ class GameScene extends Phaser.Scene {
 
         this.starfield = this.add.tileSprite(gameWidth / 2, gameHeight / 2, gameWidth, gameHeight, 'starfield');
 
-   
+        
+        const MAP_WIDTH = 130;
+        const PADDING = 15;
+        const MAP_HEIGHT = 190; 
+        const mapContainerX = gameWidth - PADDING - MAP_WIDTH; 
+        const mapContainerY = gameHeight - PADDING - MAP_HEIGHT; 
+
+        // Barreira do Mini Mapa
+        this.miniMapBarrier = this.add.zone(mapContainerX, mapContainerY, MAP_WIDTH + PADDING, MAP_HEIGHT + PADDING).setOrigin(0, 0);
+        this.physics.world.enable(this.miniMapBarrier);
+        this.miniMapBarrier.body.setImmovable(true).moves = false;
+        
+        const BOTTOM_RESTRICTION_Y = 120;
+        const hudBarrierY = gameHeight - BOTTOM_RESTRICTION_Y; 
+        
+        this.hudBarrier = this.add.zone(0, hudBarrierY, gameWidth, BOTTOM_RESTRICTION_Y).setOrigin(0, 0);
+        this.physics.world.enable(this.hudBarrier);
+        this.hudBarrier.body.setImmovable(true).moves = false;
+
+        this.physics.world.setBounds(0, 0, gameWidth, gameHeight);
+
+
         this.currentPlanetImage = this.add.image(gameWidth / 2, gameHeight + 10, 'mercurio').setScale(1.5); 
         
         this.sound.play('whoosh');
         this.music = this.sound.add('music', { volume: 0.5, loop: true }); 
         this.music.play();
 
-        // --- 2. Player ---
+        // foguetao
         this.player = this.physics.add.sprite(gameWidth / 2, gameHeight - 150, this.playerAssetKey);
         this.player.setCollideWorldBounds(true);
-        
-        
         this.player.setScale(1.5); 
         this.player.setFrame(0); 
         this.player.body.setSize(30, 30).setOffset(17, 17);
@@ -56,14 +83,38 @@ class GameScene extends Phaser.Scene {
         };
        
      
-
         this.timerText = this.add.text(10, 10, 'TEMPO: 00:00', { fontSize: '30px', fill: '#00FF00' }).setScrollFactor(0);
-
         this.scoreText = this.add.text(10, 50, 'SCORE: 0', { fontSize: '30px', fill: '#FFF' }).setScrollFactor(0);
         this.tempText = this.add.text(10, gameHeight - 40, 'Temperatura:', { fontSize: '24px', fill: '#FF4500' }).setScrollFactor(0);
         
         this.createMiniMap(gameWidth, gameHeight);
         this.updateHUD(); 
+
+        // CRIAÇÃO DAS ANIMAÇÕES 
+        
+        this.anims.create({ key: 'terra_spin', frames: this.anims.generateFrameNumbers('terra', { start: 0, end: 3 }), frameRate: 8, repeat: -1 });
+
+        if (this.playerAssetKey === 'ship_rocket2') {
+            const frameRate = 10;
+            const createShip2Anim = (key, startFrame1Based) => {
+                const startFrame0Based = startFrame1Based - 1;
+                this.anims.create({
+                    key: 'ship2_' + key,
+                    frames: this.anims.generateFrameNumbers('ship_rocket2', { start: startFrame0Based, end: startFrame0Based + 2 }),
+                    frameRate: frameRate,
+                    repeat: -1
+                });
+            };
+            
+            createShip2Anim('up', 1);       
+            createShip2Anim('up_right', 4); 
+            createShip2Anim('right', 7);    
+            createShip2Anim('down_right', 10); 
+            createShip2Anim('up_left', 13); 
+            createShip2Anim('left', 16);    
+            createShip2Anim('down_left', 19); 
+            createShip2Anim('down', 22);    
+        }
 
 
         this.starGroup = this.physics.add.group();
@@ -73,30 +124,17 @@ class GameScene extends Phaser.Scene {
         // Spawners e Timers
         this.time.addEvent({ delay: 1500, callback: this.spawnStar, callbackScope: this, loop: true });
         this.time.addEvent({ delay: 2000, callback: this.spawnObstacle, callbackScope: this, loop: true });
-        
-        // Timer de Progressão 
-        this.time.addEvent({ 
-            delay: this.PLANET_SPAWN_INTERVAL, 
-            callback: this.spawnLevelPlanet, 
-            callbackScope: this, 
-            loop: true 
-        });
-        
-    
+        this.time.addEvent({ delay: this.PLANET_SPAWN_INTERVAL, callback: this.spawnLevelPlanet, callbackScope: this, loop: true });
         this.time.delayedCall(5000, this.removeInitialPlanet, [], this); 
-
-
-        this.time.addEvent({ 
-            delay: 1000, 
-            callback: this.updateGameTime, 
-            callbackScope: this, 
-            loop: true 
-        });
+        this.time.addEvent({ delay: 1000, callback: this.updateGameTime, callbackScope: this, loop: true });
 
         // Colisões
         this.physics.add.overlap(this.player, this.starGroup, this.collectStar, null, this);
         this.physics.add.collider(this.player, this.obstacleGroup, this.playerHit, null, this);
         this.physics.add.overlap(this.player, this.planetGroup, this.levelAdvanceHit, null, this);
+        
+        this.physics.add.collider(this.player, this.miniMapBarrier);
+        this.physics.add.collider(this.player, this.hudBarrier);
     }
     
 
@@ -110,36 +148,74 @@ class GameScene extends Phaser.Scene {
         this.gameTime++;
         const minutes = Math.floor(this.gameTime / 60);
         const seconds = this.gameTime % 60;
-        
-
         const timeString = `TEMPO: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         this.timerText.setText(timeString);
     }
     
+    // --- LÓGICA DE MOVIMENTO DE 8 DIREÇÕES ---
     handlePlayerMovement() {
         this.player.setVelocity(0); 
         const speed = this.playerSpeed;
         
-        if (this.cursors.up.isDown || this.wasd.up.isDown) { 
-            this.player.setVelocityY(-speed); 
-        } 
-        else if (this.cursors.down.isDown || this.wasd.down.isDown) { 
-            this.player.setVelocityY(speed); 
-        }
+        const up = this.cursors.up.isDown || this.wasd.up.isDown;
+        const down = this.cursors.down.isDown || this.wasd.down.isDown;
+        const left = this.cursors.left.isDown || this.wasd.left.isDown;
+        const right = this.cursors.right.isDown || this.wasd.right.isDown;
 
-        if (this.cursors.left.isDown || this.wasd.left.isDown) { 
-            this.player.setVelocityX(-speed); 
-            this.player.setFrame(1);
-        } 
-        else if (this.cursors.right.isDown || this.wasd.right.isDown) { 
-            this.player.setVelocityX(speed); 
-            this.player.setFrame(2); 
-        }
-        else {
-            this.player.setFrame(0);
-        }
-        
+        if (up) this.player.setVelocityY(-speed); 
+        if (down) this.player.setVelocityY(speed); 
+        if (left) this.player.setVelocityX(-speed); 
+        if (right) this.player.setVelocityX(speed); 
+
         this.player.body.velocity.normalize().scale(speed);
+
+        const vx = this.player.body.velocity.x;
+        const vy = this.player.body.velocity.y;
+        
+      
+        if (this.playerAssetKey === 'ship_rocket2') {
+            let animKey = 'ship2_up'; 
+
+            if (vy < 0) {
+                if (vx < 0) animKey = 'ship2_up_left';
+                else if (vx > 0) animKey = 'ship2_up_right';
+                else animKey = 'ship2_up'; 
+            } else if (vy > 0) {
+                if (vx < 0) animKey = 'ship2_down_left';
+                else if (vx > 0) animKey = 'ship2_down_right';
+                else animKey = 'ship2_down'; 
+            } else {
+                if (vx < 0) animKey = 'ship2_left';
+                else if (vx > 0) animKey = 'ship2_right';
+                else animKey = 'ship2_up'; 
+            }
+
+            this.player.play(animKey, true);
+
+        // ROCKET 1 
+        } else if (this.playerAssetKey === 'ship_rocket1') {
+            let directionKey = '';
+            
+            if (up) {
+                if (left) directionKey = 'up_left';
+                else if (right) directionKey = 'up_right';
+                else directionKey = 'up';
+            } else if (down) {
+                if (left) directionKey = 'down_left';
+                else if (right) directionKey = 'down_right';
+                else directionKey = 'down';
+            } else if (left) {
+                directionKey = 'left';
+            } else if (right) {
+                directionKey = 'right';
+            } else {
+                directionKey = 'up'; 
+            }
+            
+            const frameIndex = this.rocket1Frames[directionKey];
+            this.player.setFrame(frameIndex);
+            this.player.setFlipX(false); 
+        }
     }
     
     removeInitialPlanet() {
@@ -186,15 +262,17 @@ class GameScene extends Phaser.Scene {
         };
     }
     
-   // GameScene.js
-
     levelAdvanceHit(player, planet) {
         if (!player || !planet || !planet.body) {
             return;
         }
-         this.isInvulnerable = true; 
+        
+        this.isInvulnerable = true; 
+        
         planet.disableBody(true, true);
         
+        this.sound.play('explosao'); 
+
         this.advanceLevel(); 
         
         this.cameras.main.shake(300, 0.02); 
@@ -204,7 +282,6 @@ class GameScene extends Phaser.Scene {
             this.isInvulnerable = false;
         }, [], this); 
     }
-    
 
 
    advanceLevel() {
@@ -218,7 +295,6 @@ class GameScene extends Phaser.Scene {
         
         this.updateHUD(); 
 
- 
         if (this.currentLevel === finalPlanetIndex) { 
             this.sound.play('victory');
             
@@ -237,6 +313,10 @@ class GameScene extends Phaser.Scene {
     }
 
     playerHit() {
+        if (this.isInvulnerable) {
+            return; 
+        }
+        
         this.physics.pause();
         this.sound.play('lose');
         if (this.music) {
@@ -276,9 +356,7 @@ class GameScene extends Phaser.Scene {
     }
     
     
-    // ===================================
     // MÉTODOS DO MINI MAPA E HUD
-    // ===================================
     
     createMiniMap(gameWidth, gameHeight) {
         const MAP_WIDTH = 130;
