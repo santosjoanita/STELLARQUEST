@@ -24,22 +24,21 @@ class InstructionsScene extends Phaser.Scene {
         const text_y_header = 300;
         const text_y_body = 340;
 
-        const playerAssetKey = this.textures.exists('player_ship') ? 'player_ship' : 'star'; 
-        this.add.image(col1_x, icon_y, playerAssetKey).setScale(scaleIcons);
 
+        this.add.image(col1_x, icon_y, 'ship_rocket2').setScale(2);
         this.add.text(col1_x, text_y_header, 'FOGUETE (PLAYER)', headerStyle).setOrigin(0.5);
-        this.add.text(col1_x, text_y_body, 'Controle sua nave de Mercúrio até Neptuno. Evite colisões.', bodyStyle).setOrigin(0.5, 0);
 
+        this.add.text(col1_x, text_y_body, 'Controla a tua nave de Mercúrio até Neptuno. Evita colisões.', bodyStyle).setOrigin(0.5, 0);
         this.add.image(col2_x, icon_y - 40, 'meteor').setScale(scaleIcons);
         this.add.image(col2_x, icon_y + 60, 'moon').setScale(scaleIcons);
 
         this.add.text(col2_x, text_y_header, 'METEOROS E LUAS', headerStyle).setOrigin(0.5);
-        this.add.text(col2_x, text_y_body, 'Se colidir, é Game Over! A dificuldade aumenta após Urano.', bodyStyle).setOrigin(0.5, 0);
+        this.add.text(col2_x, text_y_body, 'Se colidires com algum destes, é Game Over! A dificuldade aumenta após Urano.', bodyStyle).setOrigin(0.5, 0);
 
         this.add.image(col3_x, icon_y, 'star').setScale(scaleIcons);
 
         this.add.text(col3_x, text_y_header, 'ESTRELAS', headerStyle).setOrigin(0.5);
-        this.add.text(col3_x, text_y_body, 'Cada estrela vale 20 pontos. Recolha o máximo que conseguir.', bodyStyle).setOrigin(0.5, 0);
+        this.add.text(col3_x, text_y_body, 'Cada estrela vale 20 pontos. Recolhe o máximo que conseguires.', bodyStyle).setOrigin(0.5, 0);
         
         this.add.text(gameWidth / 2, 500, 'CONTROLOS: Setas / WASD para Mover.', { fontSize: '24px', fill: '#FFF' }).setOrigin(0.5);
       

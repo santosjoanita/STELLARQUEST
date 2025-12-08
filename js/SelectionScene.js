@@ -33,7 +33,7 @@ class SelectionScene extends Phaser.Scene {
              .on('pointerdown', this.startGame, this);
 
         
-        // --- 2. Criação dos Seletores da Nave ---
+        // --- Criação dos Seletores da Nave ---
         
         const yPos = gameHeight / 2 - 50;
         const scale = 3; 

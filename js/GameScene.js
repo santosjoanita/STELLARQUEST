@@ -55,6 +55,7 @@ class GameScene extends Phaser.Scene {
         
         const BOTTOM_RESTRICTION_Y = 120;
         const hudBarrierY = gameHeight - BOTTOM_RESTRICTION_Y; 
+
         
         this.hudBarrier = this.add.zone(0, hudBarrierY, gameWidth, BOTTOM_RESTRICTION_Y).setOrigin(0, 0);
         this.physics.world.enable(this.hudBarrier);
@@ -64,7 +65,7 @@ class GameScene extends Phaser.Scene {
         this.currentPlanetImage = this.add.image(gameWidth / 2, gameHeight + 10, 'mercurio').setScale(1.5); 
         
         this.sound.play('whoosh');
-        this.music = this.sound.add('music', { volume: 0.5, loop: true }); 
+        this.music = this.sound.add('music', { volume:1.5, loop: true });
         this.music.play();
 
         // foguetao
@@ -232,10 +233,7 @@ class GameScene extends Phaser.Scene {
 
         const planetData = this.planetData[nextLevel];
         
-        const planet = this.planetGroup.create(gameWidth / 2, -100, planetData.key);
-        
-        // A animação da Terra foi removida, pois a imagem é um asset estático
-        
+        const planet = this.planetGroup.create(gameWidth / 2, -100, planetData.key);        
         planet.setScale(0.8); 
         planet.setImmovable(true); 
 
@@ -284,6 +282,7 @@ class GameScene extends Phaser.Scene {
 
         if (this.currentLevel === finalPlanetIndex) { 
             this.sound.play('victory');
+            this.music.stop();
             
             this.scene.start('GameOverScene', { score: this.score, completed: true });
             return; 

@@ -22,6 +22,7 @@ class MenuScene extends Phaser.Scene {
        const createButton = (yPos, key, targetScene) => {
          let scaleFactor = 0.5; 
     
+         // Ajustar escala para botões específicos
         if (key === 'btn_instructions') {
         scaleFactor = 0.11; 
     }
@@ -30,7 +31,7 @@ class MenuScene extends Phaser.Scene {
                 .setInteractive()
                 .setScale(scaleFactor); 
 
-            button.on('pointerover', () => button.setScale(scaleFactor + 0.05)); 
+            button.on('pointerover', () => button.setScale(scaleFactor + 0.02)); 
             button.on('pointerout', () => button.setScale(scaleFactor));
 
             if (targetScene) {
